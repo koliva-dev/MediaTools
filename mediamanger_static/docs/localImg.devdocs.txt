@@ -1,0 +1,19 @@
+# Developer Documentation Index
+## License and Copyright
+
+This project includes code from React, which is licensed under the MIT License. The original React license and copyright notice are included in the respective files.
+
+### KolivaDev Team Rights
+
+The modifications and usage of this code by KolivaDev are under our internal team rights. All rights reserved for the content and any copies of the code are managed by the KolivaDev team.
+
+## Available Documentation
+
+1. **UploadLocalImages Component Documentation**
+   - Description: Detailed documentation for the UploadLocalImages component.
+   - Location: [docs/UploadLocalImages.md](docs/UploadLocalImages.md)
+
+## Notes for Developers
+
+- Ensure all documentation is kept up-to-date with the latest changes in the components.
+- Link to relevant `.md` files as needed.

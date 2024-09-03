@@ -1,0 +1,620 @@
+<!-- widjet designed for assemple all tools for convenient creation ads with full functionality, all statics incorporates with this block. statics has to be deployed outward of project, to avoide 
+ sequrity riscs within the main app -->
+
+<!-- interactivity logic passing the user through abilities of dedicated conditions to proceed creation his data -->
+
+<!-- lets initiate entities assembling data f user to get started with form createion -->
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<style>
+    select {
+        text-align: center;
+    }
+
+    .hint-build-advertisement {
+        display: grid;
+    }
+
+    .psewdo-alert-wrapper-ad {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        display: block;
+        background: linear-gradient(0.25turn, #000f3f, #927c00, #ffe867);
+        z-index: 0;
+    }
+
+    .hailing-ad-message {
+        position: absolute;
+        min-width: 320px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgb(145, 143, 21);
+        color: rgb(155, 209, 191);
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        text-align: center;
+    }
+
+    .gsc-control-wrapper-cse .gsc-search-button .gsc-search-button-v2 {
+        background-color: #927c00bd;
+        cursor: pointer;
+    }
+
+    .google-search-zone {
+        background-color: #ffec82bd;
+    }
+
+    .gsc-control-cse .gsc-control-cse-iw {
+        background-color: #ffec82bd;
+    }
+
+    .gsib_a {
+        background-color: #6b8dff;
+    }
+
+    input .gsc-input {
+        background-color: #6b8dff;
+    }
+
+    .gsc-webResult .gsc-result {
+        border: 1px solid darkblue;
+        background-color: burlywood;
+        border-radius: 7px;
+    }
+
+    .gsc-results-wrapper-overlay .gsc-results-wrapper-visible {
+        background-color: darkkhaki;
+        border-radius: 5px;
+        border: 2px solid rgb(66, 0, 0);
+    }
+
+    .constructor-select {
+        border: none;
+        color: rgb(0, 51, 0);
+        font-weight: bold;
+        background-color: green;
+    }
+
+    .form-submission-loop-button:hover {
+        background-color: black;
+        color: rgb(164, 255, 90);
+        border: darkred 2px solid;
+        border-top-right-radius: 10px;
+        border-bottom-left-radius: 3px;
+    }
+</style>
+<script>
+    // each stage FormData to cheching, updating, and finally assembling to data of ad(in this case is advertizse eintity)
+    let checkedSpelling = [];
+    let adCreationInitiated;
+    let adNameData = new FormData();
+    let adShortContextData = new FormData();
+    let adContentData = new FormData();
+    let adCategoryData = new FormData();
+    let adGeoData = new FormData();
+    let adMediaData = new FormData();
+    let adContactData = new FormData();
+
+    // helperAdCreator set of Tools
+    let initIndex;
+    let cMessageContainerId;
+    let adHelperWrapperId;
+    let callFunctionButtonId;
+    // let dialogContainer = document.getElementById('adCreationDialogContainer');
+    const stages = {
+        wellcomed: { done: false, wrapperId: 'adHelperWrapper', messageContainer: 'initialInvitation', stageIndex: 0, callFunctionButtonId: 'continueToFirstForm', 'formData': false },
+        naming: { done: false, wrapperId: 'adHelperWrapper', messageContainer: 'adnameCreationHelper', stageIndex: 1, callFunctionButtonId: 'submitAdNameBut', 'formData': adNameData },
+        shortContext: { done: false, wrapperId: 'adHelperWrapper', messageContainer: 'shortContextHelper', stageIndex: 2, callFunctionButtonId: 'submitShortTextForm', 'formDatat': adShortContextData },
+        content: { done: false, wrapperId: 'adHelperWrapper', messageContainer: 'contentHelper', stageIndex: 3, callFunctionButtonId: 'continueToMediaDataForm', 'formData': adContentData },
+        mediaData: { done: false, wrapperId: 'adHelperWrapper', messageContainer: 'mediaDataHelper', stageIndex: 4, callFunctionButtonId: 'continueToCategoryForm', 'formData': adMediaData },
+        category: { done: false, wrapperId: 'adHelperWrapper', messageContainer: 'categoryDataHelper', stageIndex: 5, callFunctionButtonId: 'continueToGeodataForm', 'formData': adCategoryData },
+        geoData: { done: false, wrapperId: 'adHelperWrapper', messageContainer: 'geoDataHelper', stageIndex: 6, callFunctionButtonId: 'continueToContactForm', 'formData': adGeoData },
+        constactsData: { done: false, wrapperId: 'adHelperWrapper', messageContainer: 'constactsDataHelper', stageIndex: 7, callFunctionButtonId: 'continueToAdPreview', 'formData': adContactData },
+        layoutPreview: { done: false, wrapperId: 'adHelperWrapper', messageContainer: 'plainPreviewHelper', stageIndex: 8, callFunctionButtonId: 'continueToLayoutPreview', 'formData': false },
+        inlinePreview: { done: false, wrapperId: 'adHelperWrapper', messageContainer: 'realViewHelper', stageIndex: 9, callFunctionButtonId: 'continueTosuccessChecker', 'formData': false }
+    };
+    //
+
+    const formSubmitionSrages = {
+        hintAssembler: {
+            nameAgree: {
+                agree: ['yes', 'no'],
+                primeCategory: [
+                    'sale',
+                    'services',
+                    'charity',
+                    'paid-requires',
+                    'free-pay',
+                    'self-shipping',
+                    'delivery',
+                    'for-kids',
+                    'pets',
+                    'vehcle',
+                    'used-goods',
+                    'real-estate-rent',
+                    'real-estate-sell',
+                    'require-help',
+                    'provide-help',
+                    'relocation',
+                    'accomodation-help-free',
+                    'volunteering',
+                    'other'
+                ]
+            },
+
+        },
+        initiated: [false, 'initialInvitation'],
+        adName: [false, 'adnameCreationHelper'],
+        shortContext: [false, 'shortContextHelper'],
+        content: [false, 'contentHelper'],
+        mediaData: [false, 'mediaDataHelper'],
+        constactsData: [false, 'constactsDataHelper'],
+        categoryData: [false, 'categoryDataHelper'],
+        locationData: [false, 'geoDataHelper'],
+        previewAd: [false, 'plainPreviewHelper'],
+        howLooksRealy: [false, 'realViewHelper']
+    }
+    // functions lib each element to proceed
+    const callAbstractForm = (evt, elInitiator, cFormMessage, nextFormMessageId) => {
+        if (evt.type === 'click' && evt.target === elInitiator) {
+            const nextFormMsgElt = document.getElementById(`${nextFormMessageId}`);
+            console.log('here callAbstraction log, nextformElt', nextFormMsgElt);
+            cFormMessage.style.display = cFormMessage.style.display === 'block' ? (nextFormMsgElt.style.display = 'block', 'none') : (nextFormMsgElt.style.display = 'none', 'block');
+        }
+    };
+    // check end stage function
+    const finalSuccessUploadedForm = (evt, finalData, responseConformed, concentElt) => {
+        if (evt.target === concentElt && responseConformed['success'] === true) {
+            window.location = responseConformed['redirect_to'];
+        } else {
+            return { data: finalData, response: responseConformed };
+        }
+    }
+    // naming updater block;
+    let helperAdCreatorRef;
+    const callNameAdForm = callAbstractForm;
+    const callShortContextForm = callAbstractForm;
+    const callContentForm = callAbstractForm;
+    const callMediaCreatorForm = callAbstractForm;
+    const callCategoryForm = callAbstractForm;
+    const callGeoDataForm = callAbstractForm;
+    const callContactsForm = callAbstractForm;
+    const callPreviewMainLayout = callAbstractForm;
+    const callPreviewPlainLayou = callAbstractForm;
+    const callPreviewPlainLayout = callAbstractForm;
+
+    let listenerCallNameAdForm;
+    // here keys => button ID, values => functions to call
+    const helperFunctionsMap = {
+        'continueToFirstForm': callNameAdForm,
+        'continueToShortTextForm': callShortContextForm,
+        'continueToContentForm': callContentForm,
+        'continueToMediaDataForm': callMediaCreatorForm,
+        'continueToCategoryForm': callCategoryForm,
+        'continueToGeodataForm': callGeoDataForm,
+        'continueToContactForm': callContactsForm,
+        'continueToAdPreview': callPreviewMainLayout,
+        'continueToLayoutPreview': callPreviewPlainLayout,
+    }
+    async function helperAdCreator(cStage = null) {
+        let dialogContainer;
+        if (!dialogContainer) {
+            dialogContainer = document.getElementById('adCreationDialogContainer');
+        }
+        if (!cStage && initIndex === undefined) {
+            initIndex = 0;
+            const cKeyMap = Object.keys(stages)[initIndex];
+            adHelperWrapperId = stages[cKeyMap].wrapperId;
+            cMessageContainerId = stages[cKeyMap].messageContainer;
+            callFunctionButtonId = stages[cKeyMap].callFunctionButtonId;
+            const helperWrapper = document.getElementById(`${adHelperWrapperId}`);
+            const cMessageWrapper = document.getElementById(`${cMessageContainerId}`);
+            const callFunctionElementBtn = document.getElementById(`${callFunctionButtonId}`);
+            dialogContainer.style.display = (dialogContainer.style.display === 'none' && helperWrapper.style.display === 'flex') ? (helperWrapper.style.display = 'none', cMessageWrapper.style.display = 'none', 'block') : (helperWrapper.style.display = 'flex', cMessageWrapper.style.display = 'block', 'flex');
+
+            initIndex += 1;
+            const nextKeyMap = Object.keys(stages)[initIndex];
+            const nextWrapperMessageId = stages[nextKeyMap].messageContainer;
+            listenerCallNameAdForm = (evt) => callNameAdForm(evt, callFunctionElementBtn, cMessageWrapper, nextWrapperMessageId)
+            stages[cKeyMap].done = true;
+            callFunctionElementBtn.addEventListener('click', listenerCallNameAdForm);
+
+            return;
+
+        } else if (!cStage && initIndex !== undefined && initIndex >= 1) {
+            // when this stage calles means prev form complete, so initIndex has to be increated by 1;
+            const prevKeyMap = Object.keys(stages)[initIndex];
+            console.log('here after submit form click in stages', stages[prevKeyMap], initIndex);
+
+            // lets rm initial click evtListener based on submit btn of cSubmit btn
+            const cSubmitBtnId = stages[prevKeyMap].callFunctionButtonId
+            const cBtnElt = document.getElementById(`${cSubmitBtnId}`);
+            // cBtnElt.removeEventListener('click', listenerCallNameAdForm);
+            initIndex += 1
+            const nextKeyMap = Object.keys(stages)[initIndex];
+
+            // lets define logic for show messages on next stages to filling forms as chane
+            // lets define elts required for next DOM manipulations
+            const cMessageWrapperId = stages[prevKeyMap].messageContainer;
+            const nextMessageWrapperId = stages[nextKeyMap].messageContainer;
+            const cMessageWrapperElt = document.getElementById(`${cMessageWrapperId}`);
+            const nextMessageWrapperElt = document.getElementById(`${nextMessageWrapperId}`);
+            const dataUpdated = await formDataIsNotEmpty(stages[prevKeyMap].formData);
+            if (dataUpdated) {
+                stages[prevKeyMap].done = true;
+                console.log(prevKeyMap, nextKeyMap);
+                console.log(cMessageWrapperElt.style.display, nextMessageWrapperElt.style.display)
+                await showNextMessageWrapper(cMessageWrapperElt, nextMessageWrapperElt, dataUpdated);
+                return;
+            } else {
+                console.log('here set the logic to rewrite data in related initIndex logic')
+            }
+
+        } else if (cStage) {
+            console.log('herte logig for the dedicated part of data required to be changes or updates');
+        }
+    }
+    async function formDataIsNotEmpty(formData) {
+        return [...formData].length !== 0;
+    }
+    async function showNextMessageWrapper(cMessageWrapper, nextMessageWrapper, dataExists) {
+        if (dataExists) {
+            const cMessageOnDisplay = cMessageWrapper.style.display;
+            const nextMessageWrapperDisplay = nextMessageWrapper.style.display;
+
+            if (cMessageOnDisplay !== 'none' && nextMessageWrapperDisplay === 'none') {
+                cMessageWrapper.style.display = 'none';
+                nextMessageWrapper.style.display = 'block';
+            }
+        }
+    }
+</script>
+<script src="/home/ukrainewin/MediaTools/mediamanger_static/js/tools_set_media/languageGrammarChecking.js"></script>
+<!-- <script src="./mainJs/adCreatorHelper.js"></script> -->
+<div id='adCreationDialogContainer' class="ad-creation-dialog-wrapper">
+    <!-- google-serch-tool (for user-convenience optional when creating content of an ad) -->
+    <div class="google-search-zone" style="max-width: 350px; z-index: 25;">
+        <script async src="https://cse.google.com/cse.js?cx=62ef6400fbd4246aa">
+        </script>
+        <div class="gcse-search" style="max-width: 345px;"></div>
+    </div>
+    <!-- end google-serach-tool -->
+    <!-- use dialog to forth<->back when creation process in going stage -->
+    <dialog id="adCreationMain">
+        <div id="adCreationDialog" class="hint-build-advertisement" aria-checked="mixed">
+            <label for="adNameCreated">
+                <input type="checkbox" id="adNameCreated">Назва Оголошення.
+                <button id="createAdNameTrigger" hidden>Створити назву</button>
+                <button id="updateAdNameTrigger" hidden></button>
+            </label>
+            <label for="shortContextCreated">
+                <input type="checkbox" id="shortContextCreated">Стисло про що оголошення.
+                <button id="shortContextTrigger" hidden>Написати стисло про що</button>
+                <button id="updateContextTrigger" hidden></button>
+            </label>
+            <label for="adDescriptionCreated">
+                <input type="checkbox" id="adDescriptionCreated">Зміст оголошення.
+                <button id="mainContentTrigger" hidden>Зміст оголошення</button>
+                <button id="updateMainContentTrigger" hidden>корегуати зміст оголошення</button>
+            </label>
+            <label for="adMediaShowcase">
+                <input type="checkbox" id="adMediaShowcase">Зображення / відео / документи
+                <button id="adMediaShowcaseTrigger" hidden>Додати / створити зображення</button>
+                <button id="updateAdMediaShowcaseTrigger" hidden>Корегувати зображення</button>
+            </label>
+            <label for="adCategory">
+                <input type="checkbox" id="adCategory">Категорія оголошення
+                <button id="adCategoryTrigger" hidden>Обрати категорію</button>
+                <button id="updateAdCategoryTrigger" hidden>Змінити категорію</button>
+            </label>
+            <label for="adGeo">
+                <input type="checkbox" id="adGeo">Регіон призначення
+                <button id="adGeoTrigger" hidden>Обрати регіон</button>
+                <button id="updateAdGeoTrigger" hidden>Змінити регіон</button>
+            </label>
+        </div>
+        <div id="adCreationShowProcess" class="ad-disply-layout">
+            <script>
+
+            </script>
+        </div>
+        <div id="adPreviewReady">
+            <div id="previewAdAlone" class="preview-real-detailed">
+                <script>
+
+                </script>
+            </div>
+            <div id="previewAdReal" class="preview-real-table-multiple">
+                <script>
+
+                </script>
+            </div>
+            <div id="submitAdReady">
+                <script>
+
+                </script>
+            </div>
+        </div>
+    </dialog>
+    <!-- end dialog -->
+</div>
+<!-- Creation Ad wheel front-end module. wrapped, stylished as ad builder interactive helper -->
+<div id="passingCreateAdWheel">
+    <div class="open-diaqlog-el">
+        <p class="par-oppen-dialog">Вітання, пропонуємо почати створення оголошення!</p><br>
+        <button id="startDialog">Початок!</button>
+        <script>
+            document.addEventListener('DOMContentLoaded', async function () {
+                setTimeout(() => {
+                    helperAdCreator();
+                }, 1000);
+            })
+        </script>
+    </div>
+    <script>
+        const letsOpenInitDialog = document.getElementById('startDialog');
+        const dialogBlock = document.getElementById('adCreationMain');
+        letsOpenInitDialog.addEventListener('click', () => {
+            if (dialogBlock) {
+                dialogBlock.showModal();
+            }
+        });
+    </script>
+</div>
+<div id="adHelperWrapper" class="psewdo-alert-wrapper-ad" style="display: none;">
+    <div id="initialInvitation" class="hailing-ad-message" style="display: none;">
+        <h3 style="color: darkgreen;">Вітання від проєкту Щошукаєш: оголошення</h3>
+        <hr>
+        <p style="color: rgb(7, 48, 48);">Кожного разу коли ви створюватиме оголошення, я - ваш помічник 👱🏻‍♀️,
+            проведу вас до моменту
+            оприлюднення оголошення.<br>
+            <hr> Будь ласка не нехтуйте підказками що я вам надаватиму.<br>
+            <hr>
+            <span style="color: rgb(7, 48, 48);">Моя мета допомогти Вам створити якісний та змістовний контент, щоб
+                людина яка потребує в тому що ви пропонуєте,
+                з легкісттю знайшла вас саред багатьох інших оголошень.</span><br>
+            <span style="color: rgb(0, 36, 88);"><br>Тож вигадайте назву оголошення!</span><br><button
+                id="continueToFirstForm" class="form-submission-loop-button"
+                style="cursor: pointer; background-color: rgb(0, 41, 3); color: rgb(255, 255, 255); margin-top: 15px;">Тиць
+                тут</button>
+        </p>
+    </div>
+    <div id="adnameCreationHelper" class="hailing-ad-message" style="display: none;">
+
+        <h3 style="color: darkgreen;">👱🏻‍♀️: Що до назви оголошення?</h3>
+        <hr>
+        <p style="color: rgb(7, 48, 48);">
+        <form id="adNameInstance" class="ad-creation-cluster">
+            <label for="adNameDeclare" style="color: #000f3f;">Викристовуйте Українську!<br>
+                <input id="adNameDeclare" type="text" name="adName" spellcheck="true" lang="uk" maxlength="50"
+                    style="min-width: 250px; margin-top: 10px;" placeholder="назва оголошення до 50 літер"><br>
+                <button id="submitAdNameBut" type="button" class="form-submission-loop-button"
+                    style="cursor: pointer; background-color: rgb(0, 41, 3); color: rgb(255, 255, 255); margin-top: 15px;">Далі</button>
+            </label>
+        </form>
+        </p>
+        <script>
+            document.addEventListener('DOMContentLoaded', async function () {
+                const submitAdNameBut = document.getElementById('submitAdNameBut');
+                const trySubmitadName = async (event) => {
+                    const dataCreated = document.getElementById('adNameDeclare');
+
+                    if (dataCreated.value) {
+                        try {
+                            // to avoid sentence start with lowerCase lets capitalize first letter;
+                            const textTochecking = await capitalizeFirstLetterOfEachSentence(dataCreated.value);
+                            // corrected data to api awaiting response data, with errors detected;
+                            const dataChecked = await checkTextWithLanguageTool(textTochecking);
+                            // temp console output result(disable on production);
+                            console.log(dataChecked, dataChecked.matches);
+                            const inputDtata = await spellCheckedParser(dataChecked, 'Ukrainian', dataCreated);
+                            if (inputDtata) {
+                                try {
+                                    const readyToNext = await setadName(inputDtata, dataChecked.matches, dataCreated);
+                                    console.log('input data resieved', adNameData, inputDtata)
+                                    if (readyToNext.success) {
+                                        helperAdCreator();
+                                    }
+                                }
+                                catch (error) {
+                                    console.error('Error:', error);
+                                }
+
+                            }
+
+                            if (dataChecked.ok) {
+                                await setadName(textTochecking, dataChecked.matches, dataCreated);
+                            }
+                        } catch (error) {
+                            console.error('Error processing data:', error);
+                        }
+                    }
+                };
+                if (submitAdNameBut) {
+                    submitAdNameBut.addEventListener('click', trySubmitadName);
+                }
+                async function setadName(dataSubmitted, checkedData, inputEl) {
+                    if (dataSubmitted != '' && checkedData) {
+                        adNameData.append(inputEl.name, dataSubmitted);
+                        submitAdNameBut.removeEventListener('click', trySubmitadName);
+                        return { success: true };
+                    } else {
+                        throw new Error('the data in inappropriate syntax');
+                    }
+                }
+            });
+        </script>
+    </div>
+    <div id="shortContextHelper" class="hailing-ad-message" style="display: none;">
+        <h3 style="color: darkgreen;">👱🏻‍♀️: Тут стисло напишіть головне що до змісту</h3>
+        <hr>
+        <p style="color: rgb(7, 48, 48);">Як приклад:
+            <hr><span style="color: #0003be; font-style: italic; font-weight: bold;">
+                "Продаю крісло дерев'яне, старе, у гарному стані."
+            </span>
+            <hr><br>
+            <label for="inputShortText">
+                <textarea id="inputShortText" rows="4" cols="35" maxlength="150" spellcheck="true" lang="uk"
+                    placeholder="тут зміст оголошення у стслому  форматі"></textarea>
+            </label>
+            <br><button id="submitShortTextForm" class="form-submission-loop-button"
+                style="cursor: pointer; background-color: rgb(0, 41, 3); color: rgb(255, 255, 255); margin-top: 15px;">Далі</button>
+        </p>
+        <script>
+            document.addEventListener('DOMContentLoaded', async function () {
+                const submitShortContextBtn = document.getElementById('submitShortTextForm');
+                const trySubmitShortContext = async (event) => {
+                    const dataCreatedElt = document.getElementById('inputShortText');
+                    if (dataCreatedElt.value) {
+                        console.log(dataCreatedElt.value);
+                        const textTochecking = await capitalizeFirstLetterOfEachSentence(dataCreatedElt.value);
+                        const dataChecked = await checkTextWithLanguageTool(textTochecking);
+                        const inputDtata = await spellCheckedParser(dataChecked, 'Ukrainian', dataCreatedElt);
+                        if (inputDtata) {
+                            console.log('input data resieved and value:', inputDtata);
+                            const updateFormData = await setShortTextData(inputDtata, dataCreatedElt.value, dataCreatedElt);
+                            if (updateFormData.success) {
+                                console.log('test data success', adShortContextData);
+                            }
+                        }
+
+                    }
+                }
+                submitShortContextBtn.addEventListener('click', trySubmitShortContext);
+                async function setShortTextData(dataSubmitted, checkedData, inputElt) {
+                    if (dataSubmitted !== '' && checkedData) {
+                        adShortContextData.append(inputElt.name, dataSubmitted);
+                        submitShortContextBtn.removeEventListener('click', trySubmitShortContext);
+                        return { success: true }
+                    } else {
+                        throw new Error('the data in inappropriate syntax');
+                    }
+                }
+            });
+        </script>
+    </div>
+    <div id="contentHelper" class="hailing-ad-message" style="display: none;">
+        <h3 style="color: darkgreen;">Вітання від проєкту Щошукаєш: оголошення</h3>
+        <hr>
+        <p style="color: rgb(7, 48, 48);">Кожного разу коли ви створюватиме оголошення, я - ваш помічник 👱🏻‍♀️,
+            проведу вас до моменту
+            оприлюднення оголошення.<br>
+            <hr> Будь ласка не нехтуйте підказками що я вам надаватиму.<br>
+            <hr>
+            <span style="color: rgb(7, 48, 48);">Моя мета допомогти Вам створити якісний та змістовний контент, щоб
+                людина яка потребує в тому що ви пропонуєте,
+                з легкісттю знайшла вас саред багатьох інших оголошень.</span><br>
+            <span style="color: rgb(0, 36, 88);">Тож вигадайте назву оголошення!</span><br><button
+                id="continueToFirstForm"
+                style="cursor: pointer; background-color: rgb(0, 216, 180); color: green; margin-top: 7px;">Тиць
+                тут</button>
+        </p>
+    </div>
+    <div id="mediaDataHelper" class="hailing-ad-message" style="display: none;">
+        <h3 style="color: darkgreen;">Вітання від проєкту Щошукаєш: оголошення</h3>
+        <hr>
+        <p style="color: rgb(7, 48, 48);">Кожного разу коли ви створюватиме оголошення, я - ваш помічник 👱🏻‍♀️,
+            проведу вас до моменту
+            оприлюднення оголошення.<br>
+            <hr> Будь ласка не нехтуйте підказками що я вам надаватиму.<br>
+            <hr>
+            <span style="color: rgb(7, 48, 48);">Моя мета допомогти Вам створити якісний та змістовний контент, щоб
+                людина яка потребує в тому що ви пропонуєте,
+                з легкісттю знайшла вас саред багатьох інших оголошень.</span><br>
+            <span style="color: rgb(0, 36, 88);">Тож вигадайте назву оголошення!</span><br><button
+                id="continueToFirstForm"
+                style="cursor: pointer; background-color: rgb(0, 216, 180); color: green; margin-top: 7px;">Тиць
+                тут</button>
+        </p>
+    </div>
+    <div id="categoryDataHelper" class="hailing-ad-message" style="display: none;">
+        <h3 style="color: darkgreen;">Вітання від проєкту Щошукаєш: оголошення</h3>
+        <hr>
+        <p style="color: rgb(7, 48, 48);">Кожного разу коли ви створюватиме оголошення, я - ваш помічник 👱🏻‍♀️,
+            проведу вас до моменту
+            оприлюднення оголошення.<br>
+            <hr> Будь ласка не нехтуйте підказками що я вам надаватиму.<br>
+            <hr>
+            <span style="color: rgb(7, 48, 48);">Моя мета допомогти Вам створити якісний та змістовний контент, щоб
+                людина яка потребує в тому що ви пропонуєте,
+                з легкісттю знайшла вас саред багатьох інших оголошень.</span><br>
+            <span style="color: rgb(0, 36, 88);">Тож вигадайте назву оголошення!</span><br><button
+                id="continueToFirstForm"
+                style="cursor: pointer; background-color: rgb(0, 216, 180); color: green; margin-top: 7px;">Тиць
+                тут</button>
+        </p>
+    </div>
+    <div id="geoDataHelper" class="hailing-ad-message" style="display: none;">
+        <h3 style="color: darkgreen;">Вітання від проєкту Щошукаєш: оголошення</h3>
+        <hr>
+        <p style="color: rgb(7, 48, 48);">Кожного разу коли ви створюватиме оголошення, я - ваш помічник 👱🏻‍♀️,
+            проведу вас до моменту
+            оприлюднення оголошення.<br>
+            <hr> Будь ласка не нехтуйте підказками що я вам надаватиму.<br>
+            <hr>
+            <span style="color: rgb(7, 48, 48);">Моя мета допомогти Вам створити якісний та змістовний контент, щоб
+                людина яка потребує в тому що ви пропонуєте,
+                з легкісттю знайшла вас саред багатьох інших оголошень.</span><br>
+            <span style="color: rgb(0, 36, 88);">Тож вигадайте назву оголошення!</span><br><button
+                id="continueToFirstForm"
+                style="cursor: pointer; background-color: rgb(0, 216, 180); color: green; margin-top: 7px;">Тиць
+                тут</button>
+        </p>
+    </div>
+    <div id="constactsDataHelper" class="hailing-ad-message" style="display: none;">
+        <h3 style="color: darkgreen;">Вітання від проєкту Щошукаєш: оголошення</h3>
+        <hr>
+        <p style="color: rgb(7, 48, 48);">Кожного разу коли ви створюватиме оголошення, я - ваш помічник 👱🏻‍♀️,
+            проведу вас до моменту
+            оприлюднення оголошення.<br>
+            <hr> Будь ласка не нехтуйте підказками що я вам надаватиму.<br>
+            <hr>
+            <span style="color: rgb(7, 48, 48);">Моя мета допомогти Вам створити якісний та змістовний контент, щоб
+                людина яка потребує в тому що ви пропонуєте,
+                з легкісттю знайшла вас саред багатьох інших оголошень.</span><br>
+            <span style="color: rgb(0, 36, 88);">Тож вигадайте назву оголошення!</span><br><button
+                id="continueToFirstForm"
+                style="cursor: pointer; background-color: rgb(0, 216, 180); color: green; margin-top: 7px;">Тиць
+                тут</button>
+        </p>
+    </div>
+    <div id="plainPreviewHelper" class="hailing-ad-message" style="display: none;">
+        <h3 style="color: darkgreen;">Вітання від проєкту Щошукаєш: оголошення</h3>
+        <hr>
+        <p style="color: rgb(7, 48, 48);">Кожного разу коли ви створюватиме оголошення, я - ваш помічник 👱🏻‍♀️,
+            проведу вас до моменту
+            оприлюднення оголошення.<br>
+            <hr> Будь ласка не нехтуйте підказками що я вам надаватиму.<br>
+            <hr>
+            <span style="color: rgb(7, 48, 48);">Моя мета допомогти Вам створити якісний та змістовний контент, щоб
+                людина яка потребує в тому що ви пропонуєте,
+                з легкісттю знайшла вас саред багатьох інших оголошень.</span><br>
+            <span style="color: rgb(0, 36, 88);">Тож вигадайте назву оголошення!</span><br><button
+                id="continueToFirstForm"
+                style="cursor: pointer; background-color: rgb(0, 216, 180); color: green; margin-top: 7px;">Тиць
+                тут</button>
+        </p>
+    </div>
+    <div id="realViewHelper" class="hailing-ad-message" style="display: none;">
+        <h3 style="color: darkgreen;">Вітання від проєкту Щошукаєш: оголошення</h3>
+        <hr>
+        <p style="color: rgb(7, 48, 48);">Кожного разу коли ви створюватиме оголошення, я - ваш помічник 👱🏻‍♀️,
+            проведу вас до моменту
+            оприлюднення оголошення.<br>
+            <hr> Будь ласка не нехтуйте підказками що я вам надаватиму.<br>
+            <hr>
+            <span style="color: rgb(7, 48, 48);">Моя мета допомогти Вам створити якісний та змістовний контент, щоб
+                людина яка потребує в тому що ви пропонуєте,
+                з легкісттю знайшла вас саред багатьох інших оголошень.</span><br>
+            <span style="color: rgb(0, 36, 88);">Тож вигадайте назву оголошення!</span><br><button
+                id="continueToFirstForm"
+                style="cursor: pointer; background-color: rgb(0, 216, 180); color: green; margin-top: 7px;">Тиць
+                тут</button>
+        </p>
+    </div>
+</div>

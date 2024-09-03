@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="uk">
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width,initial-scale=1"/>
+        <style>
+            body{
+                margin: 0;
+                padding: 0;
+            }
+            #boardLayout{
+                width: 100vw;
+                height: 100vh;
+            }
+            .board-body-base {
+                position: absolute;
+
+                display: grid;
+                grid-template-columns: repeat(8, 1fr); /* Define 8 equal-width columns */
+                gap: 0; /* No gap between cells */
+                border: 5px solid rgb(47, 64, 221);
+            }
+            .eliterated-positions{
+                position: absolute;
+                display: grid;
+                grid-template-columns: repeat(8, 1fr);
+                gap: 0;
+                border-left: 5px solid rgba(77, 77, 77, 0.301);
+                border-top: 5px solid rgba(87, 87, 87, 0.363);
+                border-right: 5px solid rgba(73, 73, 73, 0.267);
+
+                color: burlywood;
+                margin-bottom: auto;
+                user-select: none;
+            }
+            .enumerated-positions{
+                position: absolute;
+                display: grid;
+                grid-template-rows: repeat(8, 1fr);
+                grid-template-columns: 1fr;
+                color: burlywood;
+                border-top: 5px solid rgba(87, 87, 87, 0.363);
+                border-left: 5px solid rgba(77, 77, 77, 0.301);
+                border-bottom: 5px solid rgba(87, 87, 87, 0.363);
+                user-select: none;
+            }
+            .enumeration{
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+            }
+
+        </style>
+    </head>
+
+    <body>
+        <div id="boardLayout" style="background-color: rgb(51, 51, 51);">
+            <div id="boardDecorator">
+                <div id="boardBody" class="board-body-base">
+
+                </div>
+                <div id="eliteratePositions" class="eliterated-positions">
+
+                </div>
+                <div id="enumeratePositions" class="enumerated-positions">
+
+                </div>
+
+            </div>
+
+        </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function(){
+                // lets initiate board params:
+                const windowWidthDevice = window.outerWidth
+                const windowHeightDevice = window.outerHeight;
+                const boardGeometryParams = windowWidthDevice > windowHeightDevice ? (windowWidthDevice - windowHeightDevice)*0.7 : (windowHeightDevice - windowWidthDevice)*0.7;
+                const cellWidthHeight = boardGeometryParams/8;
+                // lets build board of chess with its coordinates
+
+                const rangeNum = ['1','2','3','4','5','6','7','8'];
+                const rangeLetters = ['A','B','C','D','E','F','G','H'];
+                const parrentBoard = document.getElementById('boardDecorator');
+                const boardBody = document.getElementById('boardBody');
+                boardBody.style.width = `${boardGeometryParams}px`;
+                boardBody.style.height = `${boardGeometryParams}px`;
+                boardBody.style.left = `${(window.innerWidth - boardGeometryParams)/2}px`;
+                boardBody.style.top = `${(window.innerHeight - boardGeometryParams)/2}px`;
+
+                for (let i=0; i<rangeLetters.length; i++){
+                    const colorInit = (i+1)%2
+
+
+                    const columnBody = document.createElement('div');
+                    columnBody.classList.add('body-columns', `${rangeLetters[i]}`);
+                    boardBody.appendChild(columnBody);
+                    for (let b=0; b<rangeNum.length; b++){
+
+                        const colorDef = colorInit + b;
+                        let cell = document.createElement('div');
+                        cell.id = `cell-${rangeLetters[i]}-${rangeNum[b]}`;
+                        cell.classList.add(`col-${rangeLetters[i]}`, `row-${rangeNum[b]}`);
+                        cell.style.width = `${cellWidthHeight}px`;
+                        cell.style.height = `${cellWidthHeight}px`;
+                        if ((colorDef % 2) === 0){
+                            cell.style.backgroundColor = 'rgb(51, 51, 51)';
+                        } else {
+                            cell.style.backgroundColor = 'darkgrey';
+                        }
+                        columnBody.appendChild(cell);
+                    }
+                }
+                const parentParamsLayout = document.getElementById('boardBody').getBoundingClientRect();
+                console.log(parentParamsLayout);
+                const enumerateEltWrapper = document.getElementById('enumeratePositions');
+                const eliteratePositions = document.getElementById('eliteratePositions');
+                eliteratePositions.style.position = 'absolute';
+                eliteratePositions.style.top = `${parentParamsLayout.top - 35}px`;
+                eliteratePositions.style.left = `${parentParamsLayout.left}px`;
+                eliteratePositions.style.width = `${boardGeometryParams}px`;
+                eliteratePositions.style.height = '25px';
+                enumerateEltWrapper.style.top = `${parentParamsLayout.top}px`;
+                enumerateEltWrapper.style.left = `${parentParamsLayout.left - 30}px`;
+                enumerateEltWrapper.style.height = `${boardGeometryParams}px`;
+                enumerateEltWrapper.style.width = '20px';
+
+
+
+                for (let i=0; i<rangeLetters.length; i++){
+                    const elementEliterate = document.createElement('div');
+                    elementEliterate.style.textAlign = 'center';
+                    elementEliterate.style.padding = '3px';
+                    const textInc = document.createElement('span');
+                    elementEliterate.appendChild(textInc);
+                    eliteratePositions.appendChild(elementEliterate);
+                    textInc.innerText = `${rangeLetters[i]}`;
+                    elementEliterate.classList.add('eliteration');
+                    elementEliterate.style.width = `${cellWidthHeight}.px`;
+                    elementEliterate.style.height = '30px';
+                }
+                for (let i=0; i<rangeNum.length; i++){
+                    const elementEnumerate = document.createElement('div');
+
+                    const numInc = document.createElement('span');
+                    elementEnumerate.appendChild(numInc);
+                    enumerateEltWrapper.appendChild(elementEnumerate);
+                    numInc.innerText = `${rangeNum[i]}`;
+                    elementEnumerate.classList.add('enumeration');
+                    elementEnumerate.style.height = `${cellWidthHeight}.px`;
+                    elementEnumerate.style.width = '30px';
+                }
+            });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ad Creation Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .form-group input[type="text"], .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        .form-group input[type="file"] {
+            margin-top: 5px;
+        }
+        .preview {
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+        }
+        .preview img {
+            max-width: 100%;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-group">
+    <label for="adName">Ad Name</label>
+    <input type="text" id="adName">
+</div>
+
+<div class="form-group">
+    <label for="adContext">Short Context</label>
+    <textarea id="adContext" rows="3"></textarea>
+</div>
+
+<div class="form-group">
+    <label for="adText">Main Text</label>
+    <textarea id="adText" rows="5"></textarea>
+</div>
+
+<div class="form-group">
+    <label for="adImages">Upload Images</label>
+    <input type="file" id="adImages" multiple>
+    <div id="imagePreview"></div>
+</div>
+
+<div class="preview">
+    <h3 id="previewAdName">Ad Name Preview</h3>
+    <p id="previewAdContext">Short Context Preview</p>
+    <p id="previewAdText">Main Text Preview</p>
+    <div id="previewImages"></div>
+</div>
+
+<script>
+    document.getElementById('adName').addEventListener('input', function() {
+        document.getElementById('previewAdName').textContent = this.value || 'Ad Name Preview';
+    });
+
+    document.getElementById('adContext').addEventListener('input', function() {
+        document.getElementById('previewAdContext').textContent = this.value || 'Short Context Preview';
+    });
+
+    document.getElementById('adText').addEventListener('input', function() {
+        document.getElementById('previewAdText').textContent = this.value || 'Main Text Preview';
+    });
+
+    document.getElementById('adImages').addEventListener('change', function() {
+        const previewContainer = document.getElementById('previewImages');
+        previewContainer.innerHTML = '';
+        Array.from(this.files).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                previewContainer.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        });
+    });
+</script>
+
+</body>
+</html>

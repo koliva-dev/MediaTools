@@ -1,0 +1,97 @@
+.showcase-block-container{
+    position: absolute;
+    top: 30%;
+    display: flex;
+    width: 80vw;
+    left: calc(10%);
+    border: 3px solid rgb(199, 0, 0);
+    border-radius: 7px;
+    height: 120px;
+    background-color: rgba(255, 248, 149, 0.76);
+    white-space: nowrap;
+    overflow: auto;
+    padding-top: 3px;
+}
+.add-item-form-manager-wrapper{
+    position: absolute;
+    top:calc(30% - 80px);
+    width: 170px;
+    left: calc(50% - 75px);
+    margin-left: 3px;
+}
+.imgs-showcase{
+    padding: 3px;
+    margin-left: 1px;
+    background-color: blanchedalmond;
+    border-radius: 7px;
+    border: 2px ridge rgba(59, 0, 0, 0.829);
+    height: 100px;
+    width: auto;
+
+}
+.submit-form-button-wrapper{
+    position: absolute;
+    top:calc(30% + 170px);
+    width: 75px;
+    left: calc(50% - 38px);
+}
+
+.show-form-contaner-div{
+    padding: 3px; 
+}
+.show-prev-inlineImgs{
+    display: none;
+}
+.show-next-inlineImgs{
+    display: none;
+}
+.submit-local-button{
+    background-color: rgb(144, 255, 110);
+    color: rgb(0, 0, 88);
+    transition: transform 0.6s ease-in-out;
+    cursor: pointer;
+    user-select: none;
+}
+.submit-local-button:hover{
+    background-color: rgb(0, 0, 88);
+    color: rgb(144, 255, 110);
+    transform: scale(1.1);
+}
+.new-img-place{
+    background-color: burlywood;
+    color: rgb(0, 0, 88);
+    transition: transform 0.6s ease-in-out;
+    cursor: pointer;
+    user-select: none;
+}
+.new-img-place:hover{
+    background-color: rgb(0, 0, 88);
+    color: burlywood;
+    transform: scale(1.1);
+}
+.ret-btn-tools{
+    width: 75px;
+    background-color: rgb(77, 0, 0);
+    color: rgb(149, 255, 176);
+    font-weight: bold;
+    transition: transform ease-in-out 0.6s;
+    border: 2px solid rgb(0, 0, 53);
+    border-top-left-radius: 7px;
+    border-bottom-right-radius: 12px;
+    cursor: pointer;
+    user-select: none;
+
+}
+.ret-btn-tools:hover{
+    transform: scale(0.9);
+    background-color: rgb(0, 59, 0);
+
+}
+.return-choose-media-tools{
+    width: 100px;
+    height: auto;
+    position: absolute;
+    top: calc(30% - 160px);
+    left: calc(50% - 50px);
+    text-align: center;
+}
