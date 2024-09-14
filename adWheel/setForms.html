@@ -1,0 +1,372 @@
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+
+<head>
+    <!-- initiate forms data as vars -->
+    <script>
+        let checkedSpelling = [];
+        let adCreationInitiated;
+        let adNameData = new FormData();
+        let adShortContextData = new FormData();
+        let adContentData = new FormData();
+        let adCategoryData = new FormData();
+        let adGeoData = new FormData();
+        let adMediaData = new FormData();
+        let adContactData = new FormData();
+        // initFormIndex dispatcher for listeners while this DOM;
+        let initFormIndex = 0;
+        async function setInitIndex(newValue) {
+            if (initFormIndex !== newValue) {
+                initFormIndex = newValue;
+                const event = new CustomEvent('indexUpdated', { detail: { newValue: initFormIndex } })
+                document.dispatchEvent(event);
+            }
+        }
+        let typeAction;
+        let switchNextLayoutFun;
+        let eltSwitchNextLayout;
+
+        const elementsMapping = {
+            wellcome: { wrapperId: 'initialInvitation', dataContainerId: undefined, buttonId: 'continueToFirstForm', index: 0, formData: undefined, toNextParams: ['initialInvitation', 'adnameCreationHelper'] },
+            adName: { wrapperId: 'adnameCreationHelper', dataContainerId: 'adNameDeclare', buttonId: 'submitAdNameBut', index: 1, formData: adNameData, toNextParams: ['adnameCreationHelper', 'shortContextHelper'] },
+            shortContext: { wrapperId: 'shortContextHelper', dataContainerId: 'inputShortText', buttonId: 'submitShortTextForm', index: 2, formData: adShortContextData, toNextParams: ['shortContextHelper', 'contentHelper'] },
+            mainContent: { wrapperId: 'contentHelper', dataContainerId: 'inputContentText', buttonId: 'submitContentForm', index: 3, formData: adContentData, toNextParams: ['contentHelper', 'mediaDataHelper'] },
+            media: { wrapperId: 'mediaDataHelper', dataContainerId: '', buttonId: 'submitMediaForm', index: 4, formData: adMediaData, toNextParams: ['mediaDataHelper', 'categoryDataHelper'] },
+            category: { wrapperId: 'categoryDataHelper', dataContainerId: '', buttonId: 'submitCategoryForm', index: 5, formData: adCategoryData, toNextParams: ['categoryDataHelper', 'geoDataHelper'] },
+            geoData: { wrapperId: 'geoDataHelper', dataContainerId: '', buttonId: 'submitGeoDataForm', index: 6, formData: adGeoData, toNextParams: ['geoDataHelper', 'constactsDataHelper'] },
+            constacts: { wrapperId: 'constactsDataHelper', dataContainerId: '', buttonId: 'submitContactsForm', index: 7, formData: adContactData, toNextParams: ['constactsDataHelper', 'plainPreviewHelper'] },
+            plainLayout: { wrapperId: 'plainPreviewHelper', dataContainerId: undefined, buttonId: undefined, index: 8, formData: undefined, toNextParams: ['plainPreviewHelper', 'realViewHelper'] },
+            realLayout: { wrapperId: 'realViewHelper', dataContainerId: undefined, buttonId: undefined, index: 9, formData: undefined, toNextParams: ['realViewHelper', 'correctorHelper'] },
+            corrector: { wrapperId: 'correctorHelper', dataContainerId: undefined, buttonId: undefined, index: 10, formData: undefined, toNextParams: [], target: { 'adName': 1, 'shortContent': 2, 'mainContent': 3, 'media': 4, 'category': 5, 'geoData': 6, 'constacts': 7 } }
+        }
+
+        document.addEventListener('DOMContentLoaded', async function () {
+            typeAction = await defineActionListenerType();
+        })
+
+
+    </script>
+    <script src="./wdgetJs/docsManager.js"></script>
+    <!-- call media manager block -->
+    <script src="./wdgetJs/callMediaManager.js"></script>
+    <!-- end call media manager block -->
+    <script src="./wdgetJs/checkSpell.js"></script>
+    <script src="./wdgetJs/checkTextData.js"></script>
+    <script src="./wdgetJs/parceCheckerResponse.js"></script>
+    <script src="./wdgetJs/textInputMainManager.js"></script>
+    <link rel="stylesheet" href="./widgetCss/mainLayout.css" type="text/css">
+    <link rel="stylesheet" href="./mediaTools/css/instructionDocs.css" type="text/css">
+</head>
+<!-- wrapper of all layout -->
+
+<body>
+    <div id="docsToShow" style="display: none;"></div>
+    <!-- mediatools block -->
+    <div id="mediaToolsWidget" class="media-widget-wrapper" style="display: none;">
+        <div id="mediaToolsMenu" class="media-tools-navigator"
+            title="Оберіть джерело зображення/відео або зробіть фото то що">
+            <p style="color: yellow; font-weight: bold; text-align: center;">Тиць тут, обрати інструмент</p>
+        </div>
+        <div id="chooseLocalUpload" class="media-tool local-upload">
+            <img id="chooseLocalUploadImg" class="img-tool" title="Завантажити з файлу" style="max-width: 75px;"
+                alt="🗃️" src="./mediaTools/img/cloud_storage.png">
+        </div>
+        <div id="chooseTakePhotoDiv" class="media-tool take-photo">
+            <img id="chooseTakePhoto" class="img-tool" title="Зробити фото" style="max-width: 75px;"
+                src="./mediaTools/img/cameraDraw.png">
+        </div>
+        <div id="chooseTakeVideoDiv" class="media-tool video-create">
+            <img id="chooseTakeVideo" class="img-tool" title="Зробити відео" style="max-width: 75px;"
+                src="./mediaTools/img/video_camera.png" alt="📹">
+        </div>
+        <div id="chooseUploadFromWebDiv" class="media-tool web-src-img">
+            <img id="chooseUploadFromWeb" class="img-tool" title="Завантажити з мережі(url)" style="max-width: 75px;"
+                alt="📡" src="./mediaTools/img/imagesFweb.png">
+        </div>
+        <div id="drawHandedImgDiv" class="media-tool fine-arts-user">
+            <img id="drawHandedImg" class="img-tool" title="Намалювати власноруч" style="max-width: 75px;"
+                src="./mediaTools/img/drawArts.png" alt="🎨">
+        </div>
+        <script src="./mediaTools/js/setUpmediaTools/mediaToolsRotation.js"></script>
+        <link rel="stylesheet" href="./mediaTools/css/mediatoolsmanager.css" type="text/css">
+    </div>
+    <div id="setUpMediaToolsWrapper" class="media-manager-tools-container" style="display: none;">
+        <div id="localUploadAnchor" class="media-tool-anchor" style="display: none;"></div>
+        <div id="takePhotoAnchor" class="media-tool-anchor" style="display: none;"></div>
+        <div id="takeVideoAnchor" class="media-tool-anchor" style="display: none;"></div>
+        <div id="urlSrcAnchor" class="media-tool-anchor" style="display: none;"></div>
+        <div id="handDrawAnchor" class="media-tool-anchor" style="display: none;"></div>
+        <script src="./mediaTools/js/imgManagerLib/imgObjectsManager.js"></script>
+        <link rel="stylesheet" href="./mediaTools/css/imgManagerStyles/localUploadLayout.css" type="text/css">
+        <!-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@5/dark.css" />
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+        <script>
+            import Swal from 'sweetalert2'
+        </script>
+    </div>
+
+    <div id="popupErrContainer" style="display: none; position: absolute;"></div>
+    <div id="spinnerAwait" class="spinner-container">
+        <div class="spinner">
+        </div><br>
+        <p class="spinner-alert"><span id="spinerMsg">Обробка даніх...</span><br>очікуємо відпіовідь серверу</p>
+
+    </div>
+    <div id="adHelperWrapper" class="psewdo-alert-wrapper-ad">
+        <div id="initialInvitation" class="hailing-ad-message">
+            <h3 style="color: darkgreen;">Вітання від проєкту Щошукаєш: оголошення</h3>
+            <hr>
+            <p style="color: rgb(7, 48, 48);">Кожного разу коли ви створюватиме оголошення, я - ваш помічник
+                👱🏻‍♀️,
+                проведу вас до моменту
+                оприлюднення оголошення.<br>
+                <hr> Будь ласка не нехтуйте підказками що я вам надаватиму.<br>
+                <hr>
+                <span style="color: rgb(7, 48, 48);">Моя мета допомогти Вам створити якісний та змістовний
+                    контент, щоб
+                    людина яка потребує в тому що ви пропонуєте,
+                    з легкісттю знайшла вас середь багатьох інших оголошень.</span><br>
+                <span style="color: rgb(0, 36, 88);"><br>Тож вигадайте назву оголошення!</span><br><button
+                    id="continueToFirstForm" class="form-submission-loop-button"
+                    style="cursor: pointer; background-color: rgb(0, 41, 3); color: rgb(255, 255, 255); margin-top: 15px;">Тиць
+                    тут</button>
+            </p>
+            <script>
+                document.addEventListener('DOMContentLoaded', async function () {
+                    if (initFormIndex === 0) {
+                        const cStage = Object.keys(elementsMapping)[initFormIndex];
+                        const clayout = elementsMapping[`${cStage}`];
+                        const behavior = await toNextForm(clayout);
+                        const listenerEltId = clayout.buttonId;
+                        eltSwitchNextLayout = document.getElementById(`${listenerEltId}`);
+                        console.log(typeAction);
+                        switchNextLayoutFun = async (event) => {
+                            await showNextForm(event, behavior[0], behavior[1]);
+                            let newInitIndex = initFormIndex + 1;
+                            await setInitIndex(newInitIndex);
+                            eltSwitchNextLayout.removeEventListener(typeAction, switchNextLayoutFun);
+                        }
+                        eltSwitchNextLayout.addEventListener(typeAction, switchNextLayoutFun);
+                    }
+                })
+            </script>
+        </div>
+        <div id="adnameCreationHelper" class="hailing-ad-message" style="display: none;">
+
+            <h3 style="color: darkgreen;">👱🏻‍♀️: Що до назви оголошення?</h3>
+            <hr>
+            <p style="color: rgb(7, 48, 48);">
+
+                <label for="adNameDeclare" style="color: #000f3f;">Викристовуйте Українську!<br>
+                    <input id="adNameDeclare" type="text" name="adName" spellcheck="true" lang="uk" maxlength="50"
+                        style="min-width: 250px; margin-top: 10px;" placeholder="назва оголошення до 50 літер"><br>
+                    <button id="submitAdNameBut" type="button" class="form-submission-loop-button"
+                        style="cursor: pointer; background-color: rgb(0, 41, 3); color: rgb(255, 255, 255); margin-top: 15px;">Далі..</button>
+                </label>
+
+            </p>
+            <script>
+                document.addEventListener('DOMContentLoaded', async function () {
+                    document.addEventListener('indexUpdated', async function (event) {
+                        let acceptedData = undefined;
+                        let checkinginputData;
+                        if (event.detail.newValue === 1) {
+                            await onStageManagerText(elementsMapping, initFormIndex, typeAction, acceptedData, checkinginputData);
+                        }
+                    })
+                });
+            </script>
+        </div>
+        <div id="shortContextHelper" class="hailing-ad-message" style="display: none;">
+            <h3 style="color: darkgreen;">👱🏻‍♀️: Тут стисло напишіть головне що до змісту</h3>
+            <hr>
+            <p style="color: rgb(7, 48, 48);">Як приклад:
+                <hr><span style="color: #0003be; font-style: italic; font-weight: bold;">
+                    "Продаю крісло дерев'яне, старе, у гарному стані."
+                </span>
+                <hr><br>
+                <label for="inputShortText">
+                    <textarea id="inputShortText" rows="4" cols="35" maxlength="150" spellcheck="true" lang="uk"
+                        name="shortContext" placeholder="тут зміст оголошення у стислому  форматі"></textarea>
+                </label>
+                <br><button id="submitShortTextForm" class="form-submission-loop-button" type="button"
+                    style="cursor: pointer; background-color: rgb(0, 41, 3); color: rgb(255, 255, 255); margin-top: 15px;">Далі..</button>
+            </p>
+            <script>
+                document.addEventListener('DOMContentLoaded', async function () {
+                    document.addEventListener('indexUpdated', async function (event) {
+                        let acceptedData = undefined;
+                        let checkinginputData; // on-cick function designed for on-action evtListener;
+                        if (event.detail.newValue === 2) {
+                            await onStageManagerText(elementsMapping, initFormIndex, typeAction, acceptedData, checkinginputData);
+                        }
+                    })
+                })
+            </script>
+        </div>
+        <div id="contentHelper" class="hailing-ad-message" style="display: none;">
+            <h3 style="color: darkgreen;">👱🏻‍♀️: Розгорнуто зміст Вашого оголошення</h3>
+            <hr>
+            <p style="color: rgb(7, 48, 48);">Зауваження:
+                <hr><span style="color: #0003be; font-style: italic; font-weight: bold;">
+                    контактні дані тут розміщувати не радимо, для цього є оремий пункт, до нього ми перейдемо далі.
+                </span>
+                <hr><br>
+                <label for="inputContentText">
+                    <textarea id="inputContentText" rows="10" cols="45" maxlength="400" spellcheck="true" lang="uk"
+                        name="mainContent" placeholder="тут зміст оголошення розгорнуто"></textarea>
+                </label>
+                <br>
+                <button id="submitContentForm" class="form-submission-loop-button" type="button"
+                    style="cursor: pointer; background-color: rgb(0, 41, 3); color: rgb(255, 255, 255); margin-top: 15px;">Далі..</button>
+            </p>
+            <script>
+                document.addEventListener('DOMContentLoaded', async function () {
+                    document.addEventListener('indexUpdated', async function (event) {
+                        let acceptedData = undefined;
+                        let checkinginputData; // on-cick function designed for on-action evtListener;
+                        if (event.detail.newValue === 3) {
+                            await onStageManagerText(elementsMapping, initFormIndex, typeAction, acceptedData, checkinginputData);
+                        }
+                    })
+                })
+            </script>
+        </div>
+        <div id="mediaDataHelper" class="hailing-ad-message" style="display: none;">
+            <h3 style="color: darkgreen;">👱🏻‍♀️: Тут додаємо зображення, відео, тощо...</h3>
+            <hr>
+            <p style="color: rgb(7, 48, 48);">Ознайомитися з інструкцією з медіаменеджеру:<br>
+            <div id="instructionMediaDoc">
+                <script src="./constJsonLib/mediaManagerInstruction.js"></script>
+            </div><br>
+            <button id="mediaInstructionBtn" class="form-submission-loop-button" type="button"
+                style="cursor: pointer; background-color: rgb(0, 41, 3); color: rgb(255, 255, 255); margin-top: 15px;">Ознайомитися
+                з інструкцією</button><br>
+            <hr>
+
+            <span style="color: rgb(7, 48, 48);">Перейти до додання медіафайлів</span><br>
+            <button id="submitMediaForm" class="form-submission-loop-button" type="button"
+                style="cursor: pointer; background-color: rgb(0, 41, 3); color: rgb(255, 255, 255); margin-top: 15px;">До
+                медіаменеджеру</button><br>
+            <hr>
+            <span style="color: rgb(0, 36, 88);">Не треба зображень, їдемо далі,</span><br><button id="submitMediaForm"
+                class="form-submission-loop-button" type="button"
+                style="cursor: pointer; background-color: rgb(0, 41, 3); color: rgb(255, 255, 255); margin-top: 15px;">Пропустити,
+                далі...</button>
+            </p>
+            <script>
+                document.addEventListener('DOMContentLoaded', async function () {
+                    document.addEventListener('indexUpdated', async function (event) {
+                        console.log(adContentData, adShortContextData, adNameData);
+                        let dataOperators = [];
+                        let acceptedData = undefined;
+                        let checkinginputData; // on-cick function designed for on-action evtListener;
+                        if (event.detail.newValue === 4) {
+                            console.log(adContentData);
+                            // call mediatools instruction by button clicking
+                            await showMediaInstruction('mediaDataHelper', 'mediaInstructionBtn', 'docsToShow', typeAction);
+                            // call mediaManager to proceed filling the data to FormData with mediaFiles
+                            await callMediaManager('mediaDataHelper', 'mediaToolsWidget', 'submitMediaForm', elementsMapping, initFormIndex, typeAction, dataOperators);
+
+                        }
+                    })
+                })
+            </script>
+        </div>
+        <div id="categoryDataHelper" class="hailing-ad-message" style="display: none;">
+            <h3 style="color: darkgreen;">Вітання від проєкту Щошукаєш: оголошення</h3>
+            <hr>
+            <p style="color: rgb(7, 48, 48);">Кожного разу коли ви створюватиме оголошення, я - ваш помічник
+                👱🏻‍♀️,
+                проведу вас до моменту
+                оприлюднення оголошення.<br>
+                <hr> Будь ласка не нехтуйте підказками що я вам надаватиму.<br>
+                <hr>
+                <span style="color: rgb(7, 48, 48);">Моя мета допомогти Вам створити якісний та змістовний
+                    контент, щоб
+                    людина яка потребує в тому що ви пропонуєте,
+                    з легкісттю знайшла вас саред багатьох інших оголошень.</span><br>
+                <span style="color: rgb(0, 36, 88);">Тож вигадайте назву оголошення!</span><br><button
+                    id="submitCategoryForm" class="form-submission-loop-button" type="button"
+                    style="cursor: pointer; background-color: rgb(0, 216, 180); color: green; margin-top: 7px;">Тиць
+                    тут</button>
+            </p>
+        </div>
+        <div id="geoDataHelper" class="hailing-ad-message" style="display: none;">
+            <h3 style="color: darkgreen;">Вітання від проєкту Щошукаєш: оголошення</h3>
+            <hr>
+            <p style="color: rgb(7, 48, 48);">Кожного разу коли ви створюватиме оголошення, я - ваш помічник
+                👱🏻‍♀️,
+                проведу вас до моменту
+                оприлюднення оголошення.<br>
+                <hr> Будь ласка не нехтуйте підказками що я вам надаватиму.<br>
+                <hr>
+                <span style="color: rgb(7, 48, 48);">Моя мета допомогти Вам створити якісний та змістовний
+                    контент, щоб
+                    людина яка потребує в тому що ви пропонуєте,
+                    з легкісттю знайшла вас саред багатьох інших оголошень.</span><br>
+                <span style="color: rgb(0, 36, 88);">Тож вигадайте назву оголошення!</span><br><button
+                    id="submitGeoDataForm" class="form-submission-loop-button" type="button"
+                    style="cursor: pointer; background-color: rgb(0, 216, 180); color: green; margin-top: 7px;">Тиць
+                    тут</button>
+            </p>
+        </div>
+        <div id="constactsDataHelper" class="hailing-ad-message" style="display: none;">
+            <h3 style="color: darkgreen;">Вітання від проєкту Щошукаєш: оголошення</h3>
+            <hr>
+            <p style="color: rgb(7, 48, 48);">Кожного разу коли ви створюватиме оголошення, я - ваш помічник
+                👱🏻‍♀️,
+                проведу вас до моменту
+                оприлюднення оголошення.<br>
+                <hr> Будь ласка не нехтуйте підказками що я вам надаватиму.<br>
+                <hr>
+                <span style="color: rgb(7, 48, 48);">Моя мета допомогти Вам створити якісний та змістовний
+                    контент, щоб
+                    людина яка потребує в тому що ви пропонуєте,
+                    з легкісттю знайшла вас саред багатьох інших оголошень.</span><br>
+                <span style="color: rgb(0, 36, 88);">Тож вигадайте назву оголошення!</span><br><button
+                    id="submitContactsForm" class="form-submission-loop-button" type="button"
+                    style="cursor: pointer; background-color: rgb(0, 216, 180); color: green; margin-top: 7px;">Тиць
+                    тут</button>
+            </p>
+        </div>
+        <div id="plainPreviewHelper" class="hailing-ad-message" style="display: none;">
+            <h3 style="color: darkgreen;">Вітання від проєкту Щошукаєш: оголошення</h3>
+            <hr>
+            <p style="color: rgb(7, 48, 48);">Кожного разу коли ви створюватиме оголошення, я - ваш помічник
+                👱🏻‍♀️,
+                проведу вас до моменту
+                оприлюднення оголошення.<br>
+                <hr> Будь ласка не нехтуйте підказками що я вам надаватиму.<br>
+                <hr>
+                <span style="color: rgb(7, 48, 48);">Моя мета допомогти Вам створити якісний та змістовний
+                    контент, щоб
+                    людина яка потребує в тому що ви пропонуєте,
+                    з легкісттю знайшла вас саред багатьох інших оголошень.</span><br>
+                <span style="color: rgb(0, 36, 88);">Тож вигадайте назву оголошення!</span><br><button
+                    id="continueToFirstForm" class="form-submission-loop-button" type="button"
+                    style="cursor: pointer; background-color: rgb(0, 216, 180); color: green; margin-top: 7px;">Тиць
+                    тут</button>
+            </p>
+        </div>
+        <div id="realViewHelper" class="hailing-ad-message" style="display: none;">
+            <h3 style="color: darkgreen;">Вітання від проєкту Щошукаєш: оголошення</h3>
+            <hr>
+            <p style="color: rgb(7, 48, 48);">Кожного разу коли ви створюватиме оголошення, я - ваш помічник
+                👱🏻‍♀️,
+                проведу вас до моменту
+                оприлюднення оголошення.<br>
+                <hr> Будь ласка не нехтуйте підказками що я вам надаватиму.<br>
+                <hr>
+                <span style="color: rgb(7, 48, 48);">Моя мета допомогти Вам створити якісний та змістовний
+                    контент, щоб
+                    людина яка потребує в тому що ви пропонуєте,
+                    з легкісттю знайшла вас саред багатьох інших оголошень.</span><br>
+                <span style="color: rgb(0, 36, 88);">Тож вигадайте назву оголошення!</span><br><button
+                    id="continueToFirstForm" class="form-submission-loop-button" type="button"
+                    style="cursor: pointer; background-color: rgb(0, 216, 180); color: green; margin-top: 7px;">Тиць
+                    тут</button>
+            </p>
+        </div>
+</body>

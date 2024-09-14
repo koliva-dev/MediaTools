@@ -1,0 +1,135 @@
+body {
+    user-select: none;
+}
+
+select {
+    text-align: center;
+}
+
+.hint-build-advertisement {
+    display: grid;
+}
+
+.psewdo-alert-wrapper-ad {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: block;
+    background: linear-gradient(0.25turn, #000f3f, #927c00, #ffe867);
+    z-index: 0;
+}
+
+.hailing-ad-message {
+    position: absolute;
+    min-width: 320px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgb(145, 143, 21);
+    color: rgb(155, 209, 191);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+.gsc-control-wrapper-cse .gsc-search-button .gsc-search-button-v2 {
+    background-color: #927c00bd;
+    cursor: pointer;
+}
+
+.google-search-zone {
+    background-color: #ffec82bd;
+}
+
+.gsc-control-cse .gsc-control-cse-iw {
+    background-color: #ffec82bd;
+}
+
+.gsib_a {
+    background-color: #6b8dff;
+}
+
+input .gsc-input {
+    background-color: #6b8dff;
+}
+
+.gsc-webResult .gsc-result {
+    border: 1px solid darkblue;
+    background-color: burlywood;
+    border-radius: 7px;
+}
+
+.gsc-results-wrapper-overlay .gsc-results-wrapper-visible {
+    background-color: darkkhaki;
+    border-radius: 5px;
+    border: 2px solid rgb(66, 0, 0);
+}
+
+.constructor-select {
+    border: none;
+    color: rgb(0, 51, 0);
+    font-weight: bold;
+    background-color: green;
+}
+
+.form-submission-loop-button:hover {
+    background-color: black;
+    color: rgb(164, 255, 90);
+    border: darkred 2px solid;
+    border-top-right-radius: 10px;
+    border-bottom-left-radius: 3px;
+}
+
+/* Spinner container with a black background */
+.spinner-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.85);
+    /* Black with opacity 0.5 */
+    display: none;
+    /* Initially hidden */
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    /* To ensure it appears above other elements */
+}
+
+/* Spinner with a gray radial border and infinite rotation */
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 3px solid rgba(134, 0, 0, 0.3);
+    /* Light gray border */
+    border-top: 3px solid rgb(0, 0, 0);
+    /* Darker top for visual effect */
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    text-align: center;
+}
+
+.spinner-alert {
+    position: absolute;
+    text-align: left;
+    color: #9c9c9c;
+    margin-left: 20%;
+    margin-right: 20%;
+
+
+}
+
+/* Keyframes for rotation animation */
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
